@@ -1,0 +1,35 @@
+<!-- app/templates/add_school_point.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add School Point</h1>
+{% if form.errors.submit %}
+    <div class="alert alert-danger">{{ form.errors.submit|join(", ") }}</div>
+{% endif %}
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        <label for="school_id" class="form-label">{{ form.school_id.label }}</label>
+        {{ form.school_id(class="form-control") }}
+        {% for error in form.school_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="event_id" class="form-label">{{ form.event_id.label }}</label>
+        {{ form.event_id(class="form-control") }}
+        {% for error in form.event_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="total_points" class="form-label">{{ form.total_points.label }}</label>
+        {{ form.total_points(class="form-control") }}
+        {% for error in form.total_points.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+<a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back</a>
+{% endblock %}

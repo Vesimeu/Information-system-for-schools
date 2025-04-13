@@ -1,0 +1,35 @@
+<!-- app/templates/add_rank.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Rank</h1>
+{% if form.errors.submit %}
+    <div class="alert alert-danger">{{ form.errors.submit|join(", ") }}</div>
+{% endif %}
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        <label for="sport_id" class="form-label">{{ form.sport_id.label }}</label>
+        {{ form.sport_id(class="form-control") }}
+        {% for error in form.sport_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="name" class="form-label">{{ form.name.label }}</label>
+        {{ form.name(class="form-control") }}
+        {% for error in form.name.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="min_points" class="form-label">{{ form.min_points.label }}</label>
+        {{ form.min_points(class="form-control") }}
+        {% for error in form.min_points.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+<a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back</a>
+{% endblock %}

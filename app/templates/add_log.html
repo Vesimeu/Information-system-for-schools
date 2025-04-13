@@ -1,0 +1,28 @@
+<!-- app/templates/add_log.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Log</h1>
+{% if form.errors.submit %}
+    <div class="alert alert-danger">{{ form.errors.submit|join(", ") }}</div>
+{% endif %}
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        <label for="action" class="form-label">{{ form.action.label }}</label>
+        {{ form.action(class="form-control") }}
+        {% for error in form.action.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="user_id" class="form-label">{{ form.user_id.label }}</label>
+        {{ form.user_id(class="form-control") }}
+        {% for error in form.user_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+<a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back</a>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!-- app/templates/add_sport.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Sport</h1>
+{% if form.errors.submit %}
+    <div class="alert alert-danger">{{ form.errors.submit|join(", ") }}</div>
+{% endif %}
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        <label for="name" class="form-label">{{ form.name.label }}</label>
+        {{ form.name(class="form-control") }}
+        {% for error in form.name.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="description" class="form-label">{{ form.description.label }}</label>
+        {{ form.description(class="form-control") }}
+        {% for error in form.description.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+<a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back</a>
+{% endblock %}

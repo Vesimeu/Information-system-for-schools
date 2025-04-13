@@ -1,0 +1,42 @@
+<!-- app/templates/add_teacher.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Teacher</h1>
+{% if form.errors.submit %}
+    <div class="alert alert-danger">{{ form.errors.submit|join(", ") }}</div>
+{% endif %}
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        <label for="school_id" class="form-label">{{ form.school_id.label }}</label>
+        {{ form.school_id(class="form-control") }}
+        {% for error in form.school_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="first_name" class="form-label">{{ form.first_name.label }}</label>
+        {{ form.first_name(class="form-control") }}
+        {% for error in form.first_name.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="last_name" class="form-label">{{ form.last_name.label }}</label>
+        {{ form.last_name(class="form-control") }}
+        {% for error in form.last_name.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="phone" class="form-label">{{ form.phone.label }}</label>
+        {{ form.phone(class="form-control") }}
+        {% for error in form.phone.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+<a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back</a>
+{% endblock %}

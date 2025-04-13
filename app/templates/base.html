@@ -10,6 +10,36 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">School Events</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="addDataDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Add Data
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="addDataDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('add_school') }}">Add School</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_class') }}">Add Class</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_participant') }}">Add Participant</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_sport') }}">Add Sport</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_rank') }}">Add Rank</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_participant_rank') }}">Add Participant Rank</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_event') }}">Add Event</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_teacher') }}">Add Teacher</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_event_participant') }}">Add Event Participant</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_result') }}">Add Result</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_school_point') }}">Add School Point</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_category') }}">Add Category</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_log') }}">Add Log</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
     <div class="container mt-4">

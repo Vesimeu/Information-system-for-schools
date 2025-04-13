@@ -1,0 +1,56 @@
+<!-- app/templates/add_participant.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Participant</h1>
+{% if form.errors.submit %}
+    <div class="alert alert-danger">{{ form.errors.submit|join(", ") }}</div>
+{% endif %}
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        <label for="school_id" class="form-label">{{ form.school_id.label }}</label>
+        {{ form.school_id(class="form-control") }}
+        {% for error in form.school_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="class_id" class="form-label">{{ form.class_id.label }}</label>
+        {{ form.class_id(class="form-control") }}
+        {% for error in form.class_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="first_name" class="form-label">{{ form.first_name.label }}</label>
+        {{ form.first_name(class="form-control") }}
+        {% for error in form.first_name.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="last_name" class="form-label">{{ form.last_name.label }}</label>
+        {{ form.last_name(class="form-control") }}
+        {% for error in form.last_name.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="birth_date" class="form-label">{{ form.birth_date.label }}</label>
+        {{ form.birth_date(class="form-control", type="date") }}
+        {% for error in form.birth_date.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label for="gender" class="form-label">{{ form.gender.label }}</label>
+        {{ form.gender(class="form-control") }}
+        {% for error in form.gender.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+<a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back</a>
+{% endblock %}
