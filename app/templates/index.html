@@ -1,0 +1,14 @@
+<!-- app/templates/index.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Welcome to School Events</h1>
+<p>Database connection test:</p>
+<ul>
+    {% for school in schools %}
+        <li>{{ school.name }}</li>
+    {% else %}
+        <li>No schools found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
