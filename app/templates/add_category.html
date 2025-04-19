@@ -1,42 +1,38 @@
-<!-- app/templates/add_category.html -->
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Add Category</h1>
-{% if form.errors.submit %}
-    <div class="alert alert-danger">{{ form.errors.submit|join(", ") }}</div>
-{% endif %}
+<h1>Добавить категорию</h1>
 <form method="POST">
     {{ form.hidden_tag() }}
-    <div class="mb-3">
-        <label for="name" class="form-label">{{ form.name.label }}</label>
+    <div class="form-group">
+        {{ form.name.label }}
         {{ form.name(class="form-control") }}
         {% for error in form.name.errors %}
-            <div class="text-danger">{{ error }}</div>
+        <small class="text-danger">{{ error }}</small>
         {% endfor %}
     </div>
-    <div class="mb-3">
-        <label for="min_age" class="form-label">{{ form.min_age.label }}</label>
+    <div class="form-group">
+        {{ form.min_age.label }}
         {{ form.min_age(class="form-control") }}
         {% for error in form.min_age.errors %}
-            <div class="text-danger">{{ error }}</div>
+        <small class="text-danger">{{ error }}</small>
         {% endfor %}
     </div>
-    <div class="mb-3">
-        <label for="max_age" class="form-label">{{ form.max_age.label }}</label>
+    <div class="form-group">
+        {{ form.max_age.label }}
         {{ form.max_age(class="form-control") }}
         {% for error in form.max_age.errors %}
-            <div class="text-danger">{{ error }}</div>
+        <small class="text-danger">{{ error }}</small>
         {% endfor %}
     </div>
-    <div class="mb-3">
-        <label for="gender" class="form-label">{{ form.gender.label }}</label>
+    <div class="form-group">
+        {{ form.gender.label }}
         {{ form.gender(class="form-control") }}
         {% for error in form.gender.errors %}
-            <div class="text-danger">{{ error }}</div>
+        <small class="text-danger">{{ error }}</small>
         {% endfor %}
     </div>
-    {{ form.submit(class="btn btn-primary") }}
+    <button type="submit" class="btn btn-primary">Добавить</button>
+    <a href="{{ url_for('categories') }}" class="btn btn-secondary">Отмена</a>
 </form>
-<a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back</a>
 {% endblock %}

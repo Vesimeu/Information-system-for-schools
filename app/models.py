@@ -28,6 +28,11 @@ class Class(db.Model):
     school_id = db.Column(db.Integer, db.ForeignKey("public.schools.school_id", ondelete="RESTRICT"), nullable=False)
     name = db.Column(db.String(10), nullable=False)
     year = db.Column(db.Integer)
+    teacher_id = db.Column(db.Integer, db.ForeignKey("public.teachers.teacher_id", ondelete="RESTRICT"), nullable=False)
+
+    # Добавляем связи
+    school = db.relationship('School', backref=db.backref('classes', lazy=True))
+    teacher = db.relationship('Teacher', backref=db.backref('classes', lazy=True))
 
     def __repr__(self):
         return f"<Class {self.name}>"
@@ -44,6 +49,10 @@ class Participant(db.Model):
     last_name = db.Column(db.String(50), nullable=False)
     birth_date = db.Column(db.Date, nullable=False)
     gender = db.Column(db.String(1), nullable=False)
+
+    # Добавляем связи
+    school = db.relationship('School', backref=db.backref('participants', lazy=True))
+    class_ = db.relationship('Class', backref=db.backref('participants', lazy=True))
 
     def __repr__(self):
         return f"<Participant {self.first_name} {self.last_name}>"
@@ -100,8 +109,12 @@ class Event(db.Model):
     date = db.Column(db.Date, nullable=False)
     location = db.Column(db.String(200))
     responsible_id = db.Column(db.Integer, db.ForeignKey("public.teachers.teacher_id", ondelete="RESTRICT"),
-                               nullable=False)
+                           nullable=False)
     distance = db.Column(db.Float, nullable=False)
+
+    # Добавляем связи
+    sport = db.relationship('Sport', backref=db.backref('events', lazy=True))
+    responsible = db.relationship('Teacher', backref=db.backref('events', lazy=True))
 
     def __repr__(self):
         return f"<Event {self.name}>"
@@ -112,10 +125,13 @@ class Teacher(db.Model):
     __table_args__ = {'schema': 'public'}
 
     teacher_id = db.Column(db.Integer, primary_key=True)
-    school_id = db.Column(db.Integer, db.ForeignKey("public.schools.school_id", ondelete="RESTRICT"), nullable=False)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     phone = db.Column(db.String(20))
+    school_id = db.Column(db.Integer, db.ForeignKey('public.schools.school_id'), nullable=False)
+
+    # Добавляем связь со школой
+    school = db.relationship('School', backref=db.backref('teachers', lazy=True))
 
     def __repr__(self):
         return f"<Teacher {self.first_name} {self.last_name}>"
@@ -189,3 +205,36 @@ class Log(db.Model):
 
     def __repr__(self):
         return f"<Log {self.action}>"
+
+
+class EventResultsView(db.Model):
+    __tablename__ = 'event_results_view'
+    __table_args__ = {'schema': 'public'}
+
+    event_id = db.Column(db.Integer, primary_key=True)
+    event_name = db.Column(db.String(100))
+    date = db.Column(db.Date)
+    location = db.Column(db.String(200))
+    sport_name = db.Column(db.String(100))
+    teacher_name = db.Column(db.String(101))
+    school_name = db.Column(db.String(100))
+    participant_name = db.Column(db.String(101))
+    category_name = db.Column(db.String(100))
+    time = db.Column(INTERVAL)
+    points = db.Column(db.Integer)
+    place = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f"<EventResultsView {self.event_name}>"
+
+
+class SchoolPointsView(db.Model):
+    __tablename__ = 'school_points_view'
+    __table_args__ = {'schema': 'public'}
+
+    school_id = db.Column(db.Integer, primary_key=True)
+    school_name = db.Column(db.String(100))
+    total_points = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f"<SchoolPointsView {self.school_name}>"

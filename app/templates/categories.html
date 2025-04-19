@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Список категорий</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Возраст</th>
+            <th>Пол</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for category in categories %}
+        <tr>
+            <td>{{ category.name }}</td>
+            <td>{{ category.min_age }} - {{ category.max_age }} лет</td>
+            <td>{{ 'Любой' if not category.gender else ('Мужской' if category.gender == 'М' else 'Женский') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{{ url_for('add_category') }}" class="btn btn-primary">Добавить категорию</a>
+<a href="{{ url_for('index') }}" class="btn btn-secondary">На главную</a>
+{% endblock %}

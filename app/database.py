@@ -52,3 +52,51 @@ def init_db():
         print("Existing tables in schema 'public':", existing_tables)
     except Exception as e:
         print("Failed to list tables:", str(e))
+
+    # Создание представлений
+    try:
+        # Создаем представление для результатов мероприятий
+        event_results_view = text("""
+        CREATE OR REPLACE VIEW event_results_view AS
+        SELECT 
+            e.event_id,
+            e.name as event_name,
+            e.date,
+            e.location,
+            s.name as sport_name,
+            t.first_name || ' ' || t.last_name as teacher_name,
+            sch.name as school_name,
+            p.first_name || ' ' || p.last_name as participant_name,
+            c.name as category_name,
+            r.time,
+            r.points,
+            r.place
+        FROM events e
+        JOIN sports s ON e.sport_id = s.sport_id
+        JOIN teachers t ON e.responsible_id = t.teacher_id
+        JOIN results r ON e.event_id = r.event_id
+        JOIN participants p ON r.participant_id = p.participant_id
+        JOIN schools sch ON p.school_id = sch.school_id
+        JOIN categories c ON r.category_id = c.category_id;
+        """)
+        
+        # Создаем представление для очков школ
+        school_points_view = text("""
+        CREATE OR REPLACE VIEW school_points_view AS
+        SELECT 
+            s.school_id,
+            s.name as school_name,
+            SUM(sp.total_points) as total_points
+        FROM schools s
+        LEFT JOIN school_points sp ON s.school_id = sp.school_id
+        GROUP BY s.school_id, s.name;
+        """)
+        
+        # Выполняем создание представлений
+        db.session.execute(event_results_view)
+        db.session.execute(school_points_view)
+        db.session.commit()
+        print("Views created successfully")
+    except Exception as e:
+        print(f"Failed to create views: {e}")
+        db.session.rollback()

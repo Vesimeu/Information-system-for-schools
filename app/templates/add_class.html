@@ -1,35 +1,43 @@
-<!-- app/templates/add_class.html -->
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Add Class</h1>
-{% if form.errors.submit %}
-    <div class="alert alert-danger">{{ form.errors.submit|join(", ") }}</div>
-{% endif %}
+<h1>Добавить класс</h1>
 <form method="POST">
     {{ form.hidden_tag() }}
-    <div class="mb-3">
-        <label for="school_id" class="form-label">{{ form.school_id.label }}</label>
+
+    <div class="form-group">
+        {{ form.school_id.label }}
         {{ form.school_id(class="form-control") }}
         {% for error in form.school_id.errors %}
-            <div class="text-danger">{{ error }}</div>
+        <small class="text-danger">{{ error }}</small>
         {% endfor %}
     </div>
-    <div class="mb-3">
-        <label for="name" class="form-label">{{ form.name.label }}</label>
+
+    <div class="form-group">
+        {{ form.name.label }}
         {{ form.name(class="form-control") }}
         {% for error in form.name.errors %}
-            <div class="text-danger">{{ error }}</div>
+        <small class="text-danger">{{ error }}</small>
         {% endfor %}
     </div>
-    <div class="mb-3">
-        <label for="year" class="form-label">{{ form.year.label }}</label>
+
+    <div class="form-group">
+        {{ form.year.label }}
         {{ form.year(class="form-control") }}
         {% for error in form.year.errors %}
-            <div class="text-danger">{{ error }}</div>
+        <small class="text-danger">{{ error }}</small>
         {% endfor %}
     </div>
-    {{ form.submit(class="btn btn-primary") }}
+
+    <div class="form-group">
+        {{ form.teacher_id.label }}
+        {{ form.teacher_id(class="form-control") }}
+        {% for error in form.teacher_id.errors %}
+        <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Добавить</button>
+    <a href="{{ url_for('classes') }}" class="btn btn-secondary">Отмена</a>
 </form>
-<a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back</a>
 {% endblock %}

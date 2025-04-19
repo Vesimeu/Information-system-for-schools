@@ -2,476 +2,115 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>School Events - All Data</h1>
-
-<div class="accordion" id="dataAccordion">
-    <!-- Schools -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="schoolsHeading">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#schoolsCollapse" aria-expanded="true" aria-controls="schoolsCollapse">
-                Schools
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Информационная система для школ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Информационная система для школ</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
             </button>
-        </h2>
-        <div id="schoolsCollapse" class="accordion-collapse collapse show" aria-labelledby="schoolsHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Contact Phone</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for school in data.schools %}
-                            <tr>
-                                <td>{{ school.school_id }}</td>
-                                <td>{{ school.name }}</td>
-                                <td>{{ school.address or '' }}</td>
-                                <td>{{ school.contact_phone or '' }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="4">No schools found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/schools">Школы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/teachers">Учителя</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/classes">Классы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/participants">Участники</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sports">Виды спорта</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/events">Мероприятия</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/event_results">Результаты</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/school_points">Очки школ</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Основные сущности</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="/add_school" class="btn btn-primary w-100">Добавить школу</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="/add_teacher" class="btn btn-primary w-100">Добавить учителя</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="/add_class" class="btn btn-primary w-100">Добавить класс</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="/add_participant" class="btn btn-primary w-100">Добавить участника</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="/add_sport" class="btn btn-primary w-100">Добавить вид спорта</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="/add_category" class="btn btn-primary w-100">Добавить категорию</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="/categories" class="btn btn-info w-100">Список категорий</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Мероприятия</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="/create_event" class="btn btn-success w-100">Создать мероприятие</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Отчеты</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="/event_results" class="btn btn-info w-100">Результаты мероприятий</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="/school_points" class="btn btn-info w-100">Очки школ</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Classes -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="classesHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#classesCollapse" aria-expanded="false" aria-controls="classesCollapse">
-                Classes
-            </button>
-        </h2>
-        <div id="classesCollapse" class="accordion-collapse collapse" aria-labelledby="classesHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>School</th>
-                            <th>Name</th>
-                            <th>Year</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for class_ in data.classes %}
-                            <tr>
-                                <td>{{ class_.class_id }}</td>
-                                <td>{{ class_.school.name }}</td>
-                                <td>{{ class_.name }}</td>
-                                <td>{{ class_.year or '' }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="4">No classes found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Participants -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="participantsHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#participantsCollapse" aria-expanded="false" aria-controls="participantsCollapse">
-                Participants
-            </button>
-        </h2>
-        <div id="participantsCollapse" class="accordion-collapse collapse" aria-labelledby="participantsHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>School</th>
-                            <th>Class</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Birth Date</th>
-                            <th>Gender</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for participant in data.participants %}
-                            <tr>
-                                <td>{{ participant.participant_id }}</td>
-                                <td>{{ participant.school.name }}</td>
-                                <td>{{ participant.class_.name }}</td>
-                                <td>{{ participant.first_name }}</td>
-                                <td>{{ participant.last_name }}</td>
-                                <td>{{ participant.birth_date }}</td>
-                                <td>{{ participant.gender }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="7">No participants found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sports -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="sportsHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sportsCollapse" aria-expanded="false" aria-controls="sportsCollapse">
-                Sports
-            </button>
-        </h2>
-        <div id="sportsCollapse" class="accordion-collapse collapse" aria-labelledby="sportsHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for sport in data.sports %}
-                            <tr>
-                                <td>{{ sport.sport_id }}</td>
-                                <td>{{ sport.name }}</td>
-                                <td>{{ sport.description or '' }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="3">No sports found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Ranks -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="ranksHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ranksCollapse" aria-expanded="false" aria-controls="ranksCollapse">
-                Ranks
-            </button>
-        </h2>
-        <div id="ranksCollapse" class="accordion-collapse collapse" aria-labelledby="ranksHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Sport</th>
-                            <th>Name</th>
-                            <th>Min Points</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for rank in data.ranks %}
-                            <tr>
-                                <td>{{ rank.rank_id }}</td>
-                                <td>{{ rank.sport.name }}</td>
-                                <td>{{ rank.name }}</td>
-                                <td>{{ rank.min_points }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="4">No ranks found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Participant Ranks -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="participantRanksHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#participantRanksCollapse" aria-expanded="false" aria-controls="participantRanksCollapse">
-                Participant Ranks
-            </button>
-        </h2>
-        <div id="participantRanksCollapse" class="accordion-collapse collapse" aria-labelledby="participantRanksHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Participant</th>
-                            <th>Rank</th>
-                            <th>Assigned Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for pr in data.participant_ranks %}
-                            <tr>
-                                <td>{{ pr.participant.first_name }} {{ pr.participant.last_name }}</td>
-                                <td>{{ pr.rank.name }} ({{ pr.rank.sport.name }})</td>
-                                <td>{{ pr.assigned_date }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="3">No participant ranks found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Events -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="eventsHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#eventsCollapse" aria-expanded="false" aria-controls="eventsCollapse">
-                Events
-            </button>
-        </h2>
-        <div id="eventsCollapse" class="accordion-collapse collapse" aria-labelledby="eventsHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Sport</th>
-                            <th>Name</th>
-                            <th>Date</th>
-                            <th>Location</th>
-                            <th>Responsible</th>
-                            <th>Distance</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for event in data.events %}
-                            <tr>
-                                <td>{{ event.event_id }}</td>
-                                <td>{{ event.sport.name }}</td>
-                                <td>{{ event.name }}</td>
-                                <td>{{ event.date }}</td>
-                                <td>{{ event.location or '' }}</td>
-                                <td>{{ event.teacher.first_name }} {{ event.teacher.last_name }}</td>
-                                <td>{{ event.distance }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="7">No events found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Teachers -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="teachersHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#teachersCollapse" aria-expanded="false" aria-controls="teachersCollapse">
-                Teachers
-            </button>
-        </h2>
-        <div id="teachersCollapse" class="accordion-collapse collapse" aria-labelledby="teachersHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>School</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Phone</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for teacher in data.teachers %}
-                            <tr>
-                                <td>{{ teacher.teacher_id }}</td>
-                                <td>{{ teacher.school.name }}</td>
-                                <td>{{ teacher.first_name }}</td>
-                                <td>{{ teacher.last_name }}</td>
-                                <td>{{ teacher.phone or '' }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="5">No teachers found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Event Participants -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="eventParticipantsHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#eventParticipantsCollapse" aria-expanded="false" aria-controls="eventParticipantsCollapse">
-                Event Participants
-            </button>
-        </h2>
-        <div id="eventParticipantsCollapse" class="accordion-collapse collapse" aria-labelledby="eventParticipantsHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Event</th>
-                            <th>Participant</th>
-                            <th>Registration Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for ep in data.event_participants %}
-                            <tr>
-                                <td>{{ ep.event.name }} ({{ ep.event.date }})</td>
-                                <td>{{ ep.participant.first_name }} {{ ep.participant.last_name }}</td>
-                                <td>{{ ep.registration_date }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="3">No event participants found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Results -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="resultsHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#resultsCollapse" aria-expanded="false" aria-controls="resultsCollapse">
-                Results
-            </button>
-        </h2>
-        <div id="resultsCollapse" class="accordion-collapse collapse" aria-labelledby="resultsHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Event</th>
-                            <th>Participant</th>
-                            <th>Category</th>
-                            <th>Time</th>
-                            <th>Points</th>
-                            <th>Place</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for result in data.results %}
-                            <tr>
-                                <td>{{ result.result_id }}</td>
-                                <td>{{ result.event.name }} ({{ result.event.date }})</td>
-                                <td>{{ result.participant.first_name }} {{ result.participant.last_name }}</td>
-                                <td>{{ result.category.name }}</td>
-                                <td>{{ result.time }}</td>
-                                <td>{{ result.points }}</td>
-                                <td>{{ result.place }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="7">No results found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- School Points -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="schoolPointsHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#schoolPointsCollapse" aria-expanded="false" aria-controls="schoolPointsCollapse">
-                School Points
-            </button>
-        </h2>
-        <div id="schoolPointsCollapse" class="accordion-collapse collapse" aria-labelledby="schoolPointsHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>School</th>
-                            <th>Event</th>
-                            <th>Total Points</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for sp in data.school_points %}
-                            <tr>
-                                <td>{{ sp.school.name }}</td>
-                                <td>{{ sp.event.name }} ({{ sp.event.date }})</td>
-                                <td>{{ sp.total_points }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="3">No school points found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categories -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="categoriesHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#categoriesCollapse" aria-expanded="false" aria-controls="categoriesCollapse">
-                Categories
-            </button>
-        </h2>
-        <div id="categoriesCollapse" class="accordion-collapse collapse" aria-labelledby="categoriesHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Min Age</th>
-                            <th>Max Age</th>
-                            <th>Gender</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for category in data.categories %}
-                            <tr>
-                                <td>{{ category.category_id }}</td>
-                                <td>{{ category.name }}</td>
-                                <td>{{ category.min_age }}</td>
-                                <td>{{ category.max_age }}</td>
-                                <td>{{ category.gender or '' }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="5">No categories found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Logs -->
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="logsHeading">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#logsCollapse" aria-expanded="false" aria-controls="logsCollapse">
-                Logs
-            </button>
-        </h2>
-        <div id="logsCollapse" class="accordion-collapse collapse" aria-labelledby="logsHeading">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Action</th>
-                            <th>User</th>
-                            <th>Timestamp</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for log in data.logs %}
-                            <tr>
-                                <td>{{ log.log_id }}</td>
-                                <td>{{ log.action }}</td>
-                                <td>{{ log.teacher.first_name + ' ' + log.teacher.last_name if log.teacher else '' }}</td>
-                                <td>{{ log.timestamp }}</td>
-                            </tr>
-                        {% else %}
-                            <tr><td colspan="4">No logs found.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
 {% endblock %}

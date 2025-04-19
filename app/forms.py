@@ -1,33 +1,36 @@
 # app/forms.py
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, DateField, FloatField, SelectField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, Optional, NumberRange
+from wtforms import StringField, IntegerField, DateField, FloatField, SelectField, TextAreaField, SubmitField, SelectMultipleField
+from wtforms.validators import DataRequired, Optional, NumberRange, Length
+from datetime import datetime
 
 class SchoolForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    address = StringField("Address", validators=[Optional()])
-    contact_phone = StringField("Contact Phone", validators=[Optional()])
-    submit = SubmitField("Add School")
+    name = StringField('Название школы', validators=[DataRequired(), Length(min=2, max=100)])
+    address = StringField('Адрес', validators=[DataRequired(), Length(min=5, max=200)])
+    contact_phone = StringField('Контактный телефон', validators=[DataRequired(), Length(min=5, max=20)])
+    submit = SubmitField('Добавить школу')
+
 
 class ClassForm(FlaskForm):
-    school_id = SelectField("School", coerce=int, validators=[DataRequired()])
-    name = StringField("Name", validators=[DataRequired()])
-    year = IntegerField("Year", validators=[Optional(), NumberRange(min=1900, max=2100)])
-    submit = SubmitField("Add Class")
+    school_id = SelectField('Школа', coerce=int, validators=[DataRequired()])
+    name = StringField('Название класса', validators=[DataRequired()])
+    year = IntegerField('Год', validators=[DataRequired()])
+    teacher_id = SelectField('Классный руководитель', coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Добавить')
 
 class ParticipantForm(FlaskForm):
-    school_id = SelectField("School", coerce=int, validators=[DataRequired()])
-    class_id = SelectField("Class", coerce=int, validators=[DataRequired()])
-    first_name = StringField("First Name", validators=[DataRequired()])
-    last_name = StringField("Last Name", validators=[DataRequired()])
-    birth_date = DateField("Birth Date", validators=[DataRequired()])
-    gender = SelectField("Gender", choices=[("M", "Male"), ("F", "Female")], validators=[DataRequired()])
-    submit = SubmitField("Add Participant")
+    school_id = SelectField('Школа', coerce=int, validators=[DataRequired()])
+    class_id = SelectField('Класс', coerce=int, validators=[DataRequired()])
+    first_name = StringField('Имя', validators=[DataRequired(), Length(min=2, max=50)])
+    last_name = StringField('Фамилия', validators=[DataRequired(), Length(min=2, max=50)])
+    birth_date = DateField('Дата рождения', validators=[DataRequired()])
+    gender = SelectField('Пол', choices=[('M', 'Мужской'), ('F', 'Женский')], validators=[DataRequired()])
+    submit = SubmitField('Добавить участника')
 
 class SportForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    description = TextAreaField("Description", validators=[Optional()])
-    submit = SubmitField("Add Sport")
+    name = StringField('Название вида спорта', validators=[DataRequired(), Length(min=2, max=100)])
+    description = TextAreaField('Описание', validators=[Optional(), Length(max=500)])
+    submit = SubmitField('Добавить вид спорта')
 
 class RankForm(FlaskForm):
     sport_id = SelectField("Sport", coerce=int, validators=[DataRequired()])
@@ -51,11 +54,11 @@ class EventForm(FlaskForm):
     submit = SubmitField("Add Event")
 
 class TeacherForm(FlaskForm):
-    school_id = SelectField("School", coerce=int, validators=[DataRequired()])
-    first_name = StringField("First Name", validators=[DataRequired()])
-    last_name = StringField("Last Name", validators=[DataRequired()])
-    phone = StringField("Phone", validators=[Optional()])
-    submit = SubmitField("Add Teacher")
+    school_id = SelectField('Школа', coerce=int, validators=[DataRequired()])
+    first_name = StringField('Имя', validators=[DataRequired(), Length(min=2, max=50)])
+    last_name = StringField('Фамилия', validators=[DataRequired(), Length(min=2, max=50)])
+    phone = StringField('Телефон', validators=[DataRequired(), Length(min=5, max=20)])
+    submit = SubmitField('Добавить учителя')
 
 class EventParticipantForm(FlaskForm):
     event_id = SelectField("Event", coerce=int, validators=[DataRequired()])
@@ -79,13 +82,24 @@ class SchoolPointForm(FlaskForm):
     submit = SubmitField("Add School Point")
 
 class CategoryForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    min_age = IntegerField("Min Age", validators=[DataRequired(), NumberRange(min=0)])
-    max_age = IntegerField("Max Age", validators=[DataRequired(), NumberRange(min=0)])
-    gender = SelectField("Gender", choices=[("", "Any"), ("M", "Male"), ("F", "Female")], validators=[Optional()])
-    submit = SubmitField("Add Category")
+    name = StringField('Название категории', validators=[DataRequired()])
+    min_age = IntegerField('Минимальный возраст', validators=[DataRequired()])
+    max_age = IntegerField('Максимальный возраст', validators=[DataRequired()])
+    gender = SelectField('Пол', choices=[('', 'Любой'), ('М', 'Мужской'), ('Ж', 'Женский')])
+    submit = SubmitField('Добавить')
 
 class LogForm(FlaskForm):
     action = StringField("Action", validators=[DataRequired()])
     user_id = SelectField("User (Teacher)", coerce=int, validators=[Optional()])
     submit = SubmitField("Add Log")
+
+class EventCreationForm(FlaskForm):
+    name = StringField('Название мероприятия', validators=[DataRequired(), Length(min=2, max=200)])
+    date = DateField('Дата проведения', validators=[DataRequired()])
+    location = StringField('Место проведения', validators=[DataRequired(), Length(min=2, max=200)])
+    sport_id = SelectField('Вид спорта', coerce=int, validators=[DataRequired()])
+    responsible_id = SelectField('Ответственный', coerce=int, validators=[DataRequired()])
+    distance = StringField('Дистанция', validators=[Optional(), Length(max=50)])
+    participants = SelectMultipleField('Участники', coerce=int, validators=[DataRequired()])
+    categories = SelectMultipleField('Категории', coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Создать мероприятие')
