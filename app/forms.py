@@ -1,7 +1,7 @@
 # app/forms.py
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, DateField, FloatField, SelectField, TextAreaField, SubmitField, SelectMultipleField
-from wtforms.validators import DataRequired, Optional, NumberRange, Length
+from wtforms.validators import DataRequired, Optional, NumberRange, Length, Regexp, ValidationError
 from datetime import datetime
 
 class SchoolForm(FlaskForm):
@@ -67,13 +67,18 @@ class EventParticipantForm(FlaskForm):
     submit = SubmitField("Add Event Participant")
 
 class ResultForm(FlaskForm):
-    event_id = SelectField("Event", coerce=int, validators=[DataRequired()])
-    participant_id = SelectField("Participant", coerce=int, validators=[DataRequired()])
-    category_id = SelectField("Category", coerce=int, validators=[DataRequired()])
-    time = StringField("Time (e.g., 00:01:30)", validators=[DataRequired()])
-    points = IntegerField("Points", validators=[DataRequired(), NumberRange(min=0)])
-    place = IntegerField("Place", validators=[DataRequired(), NumberRange(min=1)])
-    submit = SubmitField("Add Result")
+    time = StringField('Время (ЧЧ:ММ:СС)', validators=[DataRequired()])
+    points = IntegerField('Очки', validators=[DataRequired()])
+    place = IntegerField('Место', validators=[DataRequired()])
+    category_id = SelectField('Категория', coerce=int, validators=[DataRequired()])
+
+    def validate_time(self, field):
+        try:
+            h, m, s = map(int, field.data.split(':'))
+            if not (0 <= h <= 23 and 0 <= m <= 59 and 0 <= s <= 59):
+                raise ValidationError('Некорректный формат времени')
+        except:
+            raise ValidationError('Время должно быть в формате ЧЧ:ММ:СС')
 
 class SchoolPointForm(FlaskForm):
     school_id = SelectField("School", coerce=int, validators=[DataRequired()])

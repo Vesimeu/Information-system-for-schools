@@ -49,6 +49,13 @@ class Participant(db.Model):
     last_name = db.Column(db.String(50), nullable=False)
     birth_date = db.Column(db.Date, nullable=False)
     gender = db.Column(db.String(1), nullable=False)
+    # Добавляем связь с промежуточной таблицей
+    event_participants_rel = db.relationship(
+        'EventParticipant',
+        backref='participant',
+        lazy=True,
+        cascade='all, delete-orphan'
+    )
 
     # Добавляем связи
     school = db.relationship('School', backref=db.backref('participants', lazy=True))
@@ -112,9 +119,25 @@ class Event(db.Model):
                            nullable=False)
     distance = db.Column(db.Float, nullable=False)
 
-    # Добавляем связи
+    # Изменяем связи
     sport = db.relationship('Sport', backref=db.backref('events', lazy=True))
     responsible = db.relationship('Teacher', backref=db.backref('events', lazy=True))
+
+    # Добавляем связь с участниками через промежуточную таблицу
+    participants = db.relationship(
+        'Participant',
+        secondary='public.event_participants',
+        backref=db.backref('events', lazy=True),
+        lazy='dynamic'
+    )
+
+    # Добавляем связь с промежуточной таблицей
+    event_participants_rel = db.relationship(
+        'EventParticipant',
+        backref='event',
+        lazy=True,
+        cascade='all, delete-orphan'
+    )
 
     def __repr__(self):
         return f"<Event {self.name}>"
@@ -163,6 +186,22 @@ class Result(db.Model):
     time = db.Column(INTERVAL, nullable=False)
     points = db.Column(db.Integer, nullable=False)
     place = db.Column(db.Integer, nullable=False)
+
+    # Добавляем связи
+    event = db.relationship('Event', backref=db.backref('results', lazy=True))
+    participant = db.relationship('Participant', backref=db.backref('results', lazy=True))
+    category = db.relationship('Category', backref=db.backref('results', lazy=True))
+
+    @property
+    def formatted_time(self):
+        # Преобразуем INTERVAL в читаемый формат
+        if self.time:
+            seconds = self.time.total_seconds()
+            hours = int(seconds // 3600)
+            minutes = int((seconds % 3600) // 60)
+            seconds = int(seconds % 60)
+            return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        return ""
 
     def __repr__(self):
         return f"<Result result_id={self.result_id}>"
@@ -234,7 +273,10 @@ class SchoolPointsView(db.Model):
 
     school_id = db.Column(db.Integer, primary_key=True)
     school_name = db.Column(db.String(100))
+    events_participated = db.Column(db.Integer)
+    total_results = db.Column(db.Integer)
     total_points = db.Column(db.Integer)
+    avg_points = db.Column(db.Float)
 
     def __repr__(self):
         return f"<SchoolPointsView {self.school_name}>"

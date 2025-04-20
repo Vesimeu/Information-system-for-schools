@@ -53,50 +53,97 @@ def init_db():
     except Exception as e:
         print("Failed to list tables:", str(e))
 
-    # Создание представлений
+    # Определяем SQL для представлений
+    event_results_view = text("""
+    CREATE OR REPLACE VIEW event_results_view AS
+    SELECT 
+        e.event_id,
+        e.name as event_name,
+        e.date,
+        e.location,
+        s.name as sport_name,
+        t.first_name || ' ' || t.last_name as teacher_name,
+        sch.name as school_name,
+        p.first_name || ' ' || p.last_name as participant_name,
+        c.name as category_name,
+        r.time,
+        r.points,
+        r.place
+    FROM events e
+    JOIN sports s ON e.sport_id = s.sport_id
+    JOIN teachers t ON e.responsible_id = t.teacher_id
+    JOIN results r ON e.event_id = r.event_id
+    JOIN participants p ON r.participant_id = p.participant_id
+    JOIN schools sch ON p.school_id = sch.school_id
+    JOIN categories c ON r.category_id = c.category_id;
+    """)
+
+    school_points_view = text("""
+    CREATE VIEW public.school_points_view AS
+    SELECT 
+        s.school_id,
+        s.name as school_name,
+        COUNT(DISTINCT e.event_id) as events_participated,
+        COUNT(r.result_id) as total_results,
+        COALESCE(SUM(r.points), 0) as total_points,
+        CASE 
+            WHEN COUNT(r.result_id) > 0 THEN ROUND(AVG(r.points::numeric), 2)
+            ELSE 0 
+        END as avg_points
+    FROM schools s
+    LEFT JOIN participants p ON s.school_id = p.school_id
+    LEFT JOIN results r ON p.participant_id = r.participant_id
+    LEFT JOIN events e ON r.event_id = e.event_id
+    GROUP BY s.school_id, s.name
+    ORDER BY total_points DESC;
+    """)
+
+    # Принудительно пересоздаем представления
     try:
-        # Создаем представление для результатов мероприятий
-        event_results_view = text("""
-        CREATE OR REPLACE VIEW event_results_view AS
-        SELECT 
-            e.event_id,
-            e.name as event_name,
-            e.date,
-            e.location,
-            s.name as sport_name,
-            t.first_name || ' ' || t.last_name as teacher_name,
-            sch.name as school_name,
-            p.first_name || ' ' || p.last_name as participant_name,
-            c.name as category_name,
-            r.time,
-            r.points,
-            r.place
-        FROM events e
-        JOIN sports s ON e.sport_id = s.sport_id
-        JOIN teachers t ON e.responsible_id = t.teacher_id
-        JOIN results r ON e.event_id = r.event_id
-        JOIN participants p ON r.participant_id = p.participant_id
-        JOIN schools sch ON p.school_id = sch.school_id
-        JOIN categories c ON r.category_id = c.category_id;
-        """)
+        # Сначала удаляем существующие представления
+        db.session.execute(text("DROP VIEW IF EXISTS school_points_view CASCADE;"))
+        db.session.execute(text("DROP VIEW IF EXISTS event_results_view CASCADE;"))
+        db.session.commit()
         
-        # Создаем представление для очков школ
-        school_points_view = text("""
-        CREATE OR REPLACE VIEW school_points_view AS
+        # Создаем представления заново
+        db.session.execute(school_points_view)
+        db.session.execute(event_results_view)
+        db.session.commit()
+        print("Views recreated successfully")
+    except Exception as e:
+        print(f"Failed to recreate views: {e}")
+        db.session.rollback()
+
+    # Проверка создания нового представления
+    try:
+        # Сначала проверяем существование и удаляем старое представление
+        db.session.execute(text("""
+        DROP VIEW IF EXISTS public.school_points_view CASCADE;
+        """))
+        db.session.commit()
+        
+        # Создаем новое представление
+        db.session.execute(text("""
+        CREATE VIEW public.school_points_view AS
         SELECT 
             s.school_id,
             s.name as school_name,
-            SUM(sp.total_points) as total_points
+            COUNT(DISTINCT e.event_id) as events_participated,
+            COUNT(r.result_id) as total_results,
+            COALESCE(SUM(r.points), 0) as total_points,
+            CASE 
+                WHEN COUNT(r.result_id) > 0 THEN ROUND(AVG(r.points::numeric), 2)
+                ELSE 0 
+            END as avg_points
         FROM schools s
-        LEFT JOIN school_points sp ON s.school_id = sp.school_id
-        GROUP BY s.school_id, s.name;
-        """)
-        
-        # Выполняем создание представлений
-        db.session.execute(event_results_view)
-        db.session.execute(school_points_view)
+        LEFT JOIN participants p ON s.school_id = p.school_id
+        LEFT JOIN results r ON p.participant_id = r.participant_id
+        LEFT JOIN events e ON r.event_id = e.event_id
+        GROUP BY s.school_id, s.name
+        ORDER BY total_points DESC;
+        """))
         db.session.commit()
-        print("Views created successfully")
+        print("School points view created successfully")
     except Exception as e:
-        print(f"Failed to create views: {e}")
+        print(f"Error creating school points view: {e}")
         db.session.rollback()

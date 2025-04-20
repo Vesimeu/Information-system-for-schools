@@ -2,12 +2,12 @@
 from flask import render_template, request, redirect, url_for, flash
 from app import db
 from app.models import (
-    School, Class, Participant, Sport, Event, Teacher, 
-    Category, EventResultsView, SchoolPointsView, EventParticipant
+    School, Class, Participant, Sport, Event, Teacher,
+    Category, EventResultsView, SchoolPointsView, EventParticipant, Result
 )
 from app.forms import (
     SchoolForm, ClassForm, ParticipantForm, TeacherForm,
-    EventCreationForm, SportForm, CategoryForm
+    EventCreationForm, SportForm, CategoryForm, ResultForm
 )
 from datetime import datetime
 from sqlalchemy.sql import text
@@ -141,15 +141,15 @@ def register_routes(app):
     @app.route("/create_event", methods=["GET", "POST"])
     def create_event():
         form = EventCreationForm()
-        
+
         # Заполняем выпадающие списки
         form.sport_id.choices = [(s.sport_id, s.name) for s in Sport.query.all()]
-        form.responsible_id.choices = [(t.teacher_id, f"{t.first_name} {t.last_name}") 
+        form.responsible_id.choices = [(t.teacher_id, f"{t.first_name} {t.last_name}")
                                      for t in Teacher.query.all()]
-        form.participants.choices = [(p.participant_id, f"{p.first_name} {p.last_name}") 
+        form.participants.choices = [(p.participant_id, f"{p.first_name} {p.last_name}")
                                    for p in Participant.query.all()]
         form.categories.choices = [(c.category_id, c.name) for c in Category.query.all()]
-        
+
         if form.validate_on_submit():
             try:
                 # Создаем мероприятие
@@ -163,7 +163,7 @@ def register_routes(app):
                 )
                 db.session.add(event)
                 db.session.flush()  # Получаем event_id
-                
+
                 # Добавляем участников
                 for participant_id in form.participants.data:
                     event_participant = EventParticipant(
@@ -172,14 +172,14 @@ def register_routes(app):
                         registration_date=datetime.now()
                     )
                     db.session.add(event_participant)
-                
+
                 db.session.commit()
                 flash('Мероприятие успешно создано', 'success')
                 return redirect(url_for('events'))
             except Exception as e:
                 db.session.rollback()
                 flash(f'Ошибка при создании мероприятия: {str(e)}', 'error')
-        
+
         return render_template("create_event.html", form=form)
 
     # Представления
@@ -190,8 +190,51 @@ def register_routes(app):
 
     @app.route("/school_points")
     def school_points():
-        points = SchoolPointsView.query.all()
-        return render_template("school_points.html", points=points)
+        try:
+            # Используем прямой SQL запрос
+            sql = text("""
+            SELECT 
+                s.school_id,
+                s.name as school_name,
+                COUNT(DISTINCT e.event_id) as events_participated,
+                COUNT(r.result_id) as total_results,
+                COALESCE(SUM(r.points), 0) as total_points,
+                CASE 
+                    WHEN COUNT(r.result_id) > 0 THEN ROUND(AVG(r.points::numeric), 2)
+                    ELSE 0 
+                END as avg_points
+            FROM schools s
+            LEFT JOIN participants p ON s.school_id = p.school_id
+            LEFT JOIN results r ON p.participant_id = r.participant_id
+            LEFT JOIN events e ON r.event_id = e.event_id
+            GROUP BY s.school_id, s.name
+            ORDER BY total_points DESC
+            """)
+            
+            # Создаем список объектов для шаблона
+            points = []
+            results = db.session.execute(sql)
+            
+            for row in results:
+                point = type('SchoolPoint', (), {
+                    'school_name': row.school_name,
+                    'events_participated': row.events_participated,
+                    'total_results': row.total_results,
+                    'total_points': row.total_points,
+                    'avg_points': row.avg_points
+                })
+                points.append(point)
+                
+            print(f"Points to display: {len(points)}")
+            for p in points:
+                print(f"School: {p.school_name}, Points: {p.total_points}")
+                
+            return render_template("school_points.html", points=points)
+            
+        except Exception as e:
+            print(f"Error in school_points route: {e}")
+            flash(f"Произошла ошибка при получении данных: {str(e)}", "error")
+            return render_template("school_points.html", points=[])
 
     @app.route("/categories")
     def categories():
@@ -213,3 +256,63 @@ def register_routes(app):
             flash('Категория успешно добавлена', 'success')
             return redirect(url_for('categories'))
         return render_template("add_category.html", form=form)
+
+    @app.route("/event/<int:event_id>")
+    def event_details(event_id):
+        event = Event.query.options(
+            db.joinedload(Event.sport),
+            db.joinedload(Event.responsible),
+            db.joinedload(Event.event_participants_rel).joinedload(EventParticipant.participant)
+        ).get_or_404(event_id)
+
+        # Получаем уже добавленные результаты с подгрузкой связанных данных
+        results = db.session.query(Result).filter_by(event_id=event_id).options(
+            db.joinedload(Result.participant).joinedload(Participant.school),
+            db.joinedload(Result.participant).joinedload(Participant.class_),
+            db.joinedload(Result.category)
+        ).all()
+
+        return render_template("event_details.html",
+                               event=event,
+                               results=results)
+
+    @app.route("/event/<int:event_id>/add_result/<int:participant_id>", methods=["GET", "POST"])
+    def add_result(event_id, participant_id):
+        form = ResultForm()
+        event = Event.query.get_or_404(event_id)
+        participant = Participant.query.get_or_404(participant_id)
+
+        # Проверяем, что участник зарегистрирован на мероприятие
+        if not EventParticipant.query.filter_by(
+                event_id=event_id,
+                participant_id=participant_id
+        ).first():
+            flash('Участник не зарегистрирован на это мероприятие', 'error')
+            return redirect(url_for('event_details', event_id=event_id))
+
+        # Заполняем выпадающие списки
+        form.category_id.choices = [(c.category_id, c.name) for c in Category.query.all()]
+
+        if form.validate_on_submit():
+            try:
+                # Преобразуем строку времени в INTERVAL
+                h, m, s = map(int, form.time.data.split(':'))
+                time_str = f"{h} hours {m} minutes {s} seconds"
+
+                result = Result(
+                    event_id=event_id,
+                    participant_id=participant_id,
+                    category_id=form.category_id.data,
+                    time=time_str,
+                    points=form.points.data,
+                    place=form.place.data
+                )
+                db.session.add(result)
+                db.session.commit()
+                flash('Результат успешно добавлен', 'success')
+                return redirect(url_for('event_details', event_id=event_id))
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Ошибка при добавлении результата: {str(e)}', 'error')
+
+        return render_template("add_result.html", form=form, event_id=event_id)
