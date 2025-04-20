@@ -185,8 +185,62 @@ def register_routes(app):
     # Представления
     @app.route("/event_results")
     def event_results():
-        results = EventResultsView.query.all()
-        return render_template("event_results.html", results=results)
+        try:
+            # Используем прямой SQL запрос
+            sql = text("""
+            SELECT 
+                e.event_id,
+                e.name as event_name,
+                e.date,
+                e.location,
+                s.name as sport_name,
+                t.first_name || ' ' || t.last_name as teacher_name,
+                sch.name as school_name,
+                p.first_name || ' ' || p.last_name as participant_name,
+                c.name as category_name,
+                r.time,
+                r.points,
+                r.place
+            FROM events e
+            JOIN sports s ON e.sport_id = s.sport_id
+            JOIN teachers t ON e.responsible_id = t.teacher_id
+            JOIN results r ON e.event_id = r.event_id
+            JOIN participants p ON r.participant_id = p.participant_id
+            JOIN schools sch ON p.school_id = sch.school_id
+            JOIN categories c ON r.category_id = c.category_id
+            ORDER BY e.date DESC, r.place ASC
+            """)
+
+            # Создаем список объектов для шаблона
+            results = []
+            query_results = db.session.execute(sql)
+
+            for row in query_results:
+                result = type('EventResult', (), {
+                    'event_name': row.event_name,
+                    'date': row.date,
+                    'location': row.location,
+                    'sport_name': row.sport_name,
+                    'teacher_name': row.teacher_name,
+                    'school_name': row.school_name,
+                    'participant_name': row.participant_name,
+                    'category_name': row.category_name,
+                    'time': row.time,
+                    'points': row.points,
+                    'place': row.place
+                })
+                results.append(result)
+
+            print(f"Results to display: {len(results)}")
+            for r in results:
+                print(f"Event: {r.event_name}, Participant: {r.participant_name}, Place: {r.place}")
+
+            return render_template("event_results.html", results=results)
+
+        except Exception as e:
+            print(f"Error in event_results route: {e}")
+            flash(f"Произошла ошибка при получении данных: {str(e)}", "error")
+            return render_template("event_results.html", results=[])
 
     @app.route("/school_points")
     def school_points():
