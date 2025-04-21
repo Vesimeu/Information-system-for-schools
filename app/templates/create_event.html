@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Создание мероприятия</h2>
+    <form method="POST" class="mt-4">
+        {{ form.hidden_tag() }}
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control") }}
+                    {% if form.name.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.name.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.date.label(class="form-label") }}
+                    {{ form.date(class="form-control", type="date") }}
+                    {% if form.date.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.date.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.location.label(class="form-label") }}
+                    {{ form.location(class="form-control") }}
+                    {% if form.location.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.location.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.distance.label(class="form-label") }}
+                    {{ form.distance(class="form-control") }}
+                    {% if form.distance.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.distance.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.sport_id.label(class="form-label") }}
+                    {{ form.sport_id(class="form-select") }}
+                    {% if form.sport_id.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.sport_id.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.responsible_id.label(class="form-label") }}
+                    {{ form.responsible_id(class="form-select") }}
+                    {% if form.responsible_id.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.responsible_id.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.participants.label(class="form-label") }}
+                    {{ form.participants(class="form-select", multiple="multiple", size="5") }}
+                    {% if form.participants.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.participants.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.categories.label(class="form-label") }}
+                    {{ form.categories(class="form-select", multiple="multiple", size="5") }}
+                    {% if form.categories.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.categories.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group mt-4">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</div>
+{% endblock %} 

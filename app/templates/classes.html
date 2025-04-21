@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Классы</h2>
+        <a href="{{ url_for('add_class') }}" class="btn btn-primary">Добавить класс</a>
+    </div>
+
+    {% if classes %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Школа</th>
+                        <th>Классный руководитель</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for class in classes %}
+                        <tr>
+                            <td>{{ class.name }}</td>
+                            <td>{{ class.school.name }}</td>
+                            <td>{{ class.teacher.first_name }} {{ class.teacher.last_name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Нет добавленных классов.
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

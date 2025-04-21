@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Виды спорта</h2>
+        <a href="{{ url_for('add_sport') }}" class="btn btn-primary">Добавить вид спорта</a>
+    </div>
+
+    {% if sports %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Описание</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sport in sports %}
+                        <tr>
+                            <td>{{ sport.name }}</td>
+                            <td>{{ sport.description or '' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Нет добавленных видов спорта.
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

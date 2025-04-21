@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Статистика школ</h2>
+    
+    <div class="table-responsive mt-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Школа</th>
+                    <th>Количество мероприятий</th>
+                    <th>Всего результатов</th>
+                    <th>Общее количество очков</th>
+                    <th>Среднее количество очков</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for point in points %}
+                <tr>
+                    <td>{{ point.school_name }}</td>
+                    <td>{{ point.events_participated or 0 }}</td>
+                    <td>{{ point.total_results or 0 }}</td>
+                    <td>{{ point.total_points or 0 }}</td>
+                    <td>{{ point.avg_points or 0 }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">Нет данных</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 

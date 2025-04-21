@@ -1,0 +1,31 @@
+<!-- app/templates/events.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Мероприятия</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Дата</th>
+            <th>Место</th>
+            <th>Вид спорта</th>
+            <th>Ответственный</th>
+            <th>Дистанция</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for event in events %}
+        <tr>
+            <td><a href="{{ url_for('event_details', event_id=event.event_id) }}">{{ event.name }}</a></td>
+            <td>{{ event.date.strftime('%d.%m.%Y') }}</td>
+            <td>{{ event.location }}</td>
+            <td>{{ event.sport.name }}</td>
+            <td>{{ event.responsible.first_name }} {{ event.responsible.last_name }}</td>
+            <td>{{ event.distance }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{{ url_for('create_event') }}" class="btn btn-primary">Создать мероприятие</a>
+{% endblock %}
